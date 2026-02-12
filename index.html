@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relato - Apresentação Interativa</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#111827">
+<link rel="shortcut icon" href="image.ico" type="image/x-icon">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Montserrat',sans-serif;
+}
+
+body{
+  background: linear-gradient(135deg,#0f172a,#1e293b);
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  overflow:hidden;
+}
+
+.slide{
+  width:90%;
+  max-width:900px;
+  background:rgba(255,255,255,0.05);
+  padding:40px;
+  border-radius:25px;
+  backdrop-filter:blur(25px);
+  box-shadow:0 25px 50px rgba(0,0,0,0.6);
+  text-align:center;
+  display:none;
+  animation: fade 0.6s ease;
+}
+
+.slide.active{
+  display:block;
+}
+
+.logo{
+  width:120px;
+  margin-bottom:20px;
+}
+
+h1{
+  font-size:2.3rem;
+  margin-bottom:15px;
+}
+
+h2{
+  margin-bottom:15px;
+}
+
+p{
+  line-height:1.7;
+  font-size:1.1rem;
+}
+
+.capa-info{
+  margin-top:25px;
+  font-size:1rem;
+  opacity:0.9;
+}
+
+.capa-info span{
+  display:block;
+  margin:5px 0;
+}
+
+.buttons{
+  position:fixed;
+  bottom:30px;
+  display:flex;
+  gap:15px;
+}
+
+button{
+  padding:10px 22px;
+  border:none;
+  border-radius:30px;
+  cursor:pointer;
+  font-weight:600;
+  transition:0.3s;
+}
+
+.next{
+  background:#22d3ee;
+}
+
+.prev{
+  background:#f472b6;
+}
+
+button:hover{
+  transform:scale(1.07);
+}
+
+.progress{
+  position:fixed;
+  top:0;
+  left:0;
+  height:5px;
+  background:#22d3ee;
+  width:0%;
+  transition:0.3s;
+}
+
+.quiz button{
+  margin-top:15px;
+  background:#22c55e;
+  color:white;
+  display:block;
+  width:100%;
+  margin-bottom:10px;
+}
+
+footer{
+  position:fixed;
+  bottom:5px;
+  font-size:0.8rem;
+  opacity:0.6;
+}
+
+@keyframes fade{
+  from{opacity:0;transform:translateY(25px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+@media(max-width:600px){
+  h1{font-size:1.6rem;}
+  p{font-size:1rem;}
+  .logo{width:90px;}
+}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<!-- CAPA COM LOGO -->
+<div class="slide active">
+
+  <!-- 🔥 COLOQUE O NOME DO SEU ARQUIVO DE LOGO AQUI -->
+  <img src="image.png" alt="Logo" class="logo">
+
+  <h1>📖 Gênero Textual: Relato</h1>
+  <p>Apresentação de Português</p>
+
+  <div class="capa-info">
+    <span><strong>Integrantes:</strong> Matheus Amorim, Adriano Borges e Samuel Victor</span>
+    <span><strong>Turma:</strong> 3º Ano A</span>
+    <span><strong>Professor(a):</strong> Gabriel Victor</span>
+    <span><strong>Data:</strong> 11/02/2026</span>
+  </div>
+</div>
+
+<!-- DEFINIÇÃO -->
+<div class="slide">
+  <h2>O que é um Relato?</h2>
+  <p>
+    Relato é um texto que conta um fato real vivido por alguém.
+    Ele apresenta acontecimentos em ordem cronológica,
+    geralmente narrado em primeira pessoa,
+    podendo expressar sentimentos e experiências.
+  </p>
+</div>
+
+<!-- CARACTERÍSTICAS -->
+<div class="slide">
+  <h2>Características do Relato</h2>
+  <p>
+    ✔ Baseado em fatos reais<br>
+    ✔ Narrado em 1ª pessoa<br>
+    ✔ Ordem cronológica<br>
+    ✔ Linguagem clara e objetiva<br>
+    ✔ Expressa emoções
+  </p>
+</div>
+
+<!-- EXEMPLO -->
+<div class="slide">
+  <h2>Exemplo de Relato</h2>
+  <p>
+    "No meu primeiro dia de aula, eu estava muito nervoso.
+    Não conhecia quase ninguém. Com o passar das horas,
+    fiz novos amigos e percebi que aquele momento marcava
+    o início de uma nova fase na minha vida."
+    <br><br>
+    — Mariana Costa, 14 anos
+  </p>
+</div>
+
+<!-- QUIZ -->
+<div class="slide quiz">
+  <h2>Quiz Final 🎯</h2>
+
+  <p id="pergunta"></p>
+
+  <button onclick="responder(0)" id="btn0"></button>
+  <button onclick="responder(1)" id="btn1"></button>
+  <button onclick="responder(2)" id="btn2"></button>
+
+  <p id="feedback"></p>
+  <p id="pontuacao"></p>
+</div>
+
+<div class="buttons">
+  <button class="prev" onclick="mudarSlide(-1)">⬅ Voltar</button>
+  <button class="next" onclick="mudarSlide(1)">Avançar ➡</button>
+</div>
+
+<footer>
+  Apresentação Interativa - Português
+</footer>
+
+<script>
+let slideAtual = 0;
+const slides = document.querySelectorAll(".slide");
+const progress = document.getElementById("progress");
+
+function mostrarSlide(index){
+  slides.forEach(s => s.classList.remove("active"));
+  slides[index].classList.add("active");
+  progress.style.width = ((index+1)/slides.length)*100 + "%";
+}
+
+function mudarSlide(direcao){
+  slideAtual += direcao;
+  if(slideAtual < 0) slideAtual = 0;
+  if(slideAtual >= slides.length) slideAtual = slides.length-1;
+  mostrarSlide(slideAtual);
+}
+
+mostrarSlide(slideAtual);
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js');
+}
+
+/* QUIZ */
+
+const perguntas = [
+  {
+    pergunta: "Relato é baseado em:",
+    opcoes: ["Fatos reais", "Histórias inventadas", "Lendas antigas"],
+    correta: 0
+  },
+  {
+    pergunta: "O relato normalmente é escrito em:",
+    opcoes: ["3ª pessoa", "1ª pessoa", "Forma de poema"],
+    correta: 1
+  },
+  {
+    pergunta: "Uma característica do relato é:",
+    opcoes: ["Ordem cronológica", "Falta de tempo definido", "Somente diálogos"],
+    correta: 0
+  },
+  {
+    pergunta: "O relato pode expressar:",
+    opcoes: ["Sentimentos", "Apenas números", "Somente dados científicos"],
+    correta: 0
+  }
+];
+
+let perguntaAtual = 0;
+let pontos = 0;
+
+const perguntaEl = document.getElementById("pergunta");
+const feedbackEl = document.getElementById("feedback");
+const pontuacaoEl = document.getElementById("pontuacao");
+
+function carregarPergunta(){
+  if(perguntaAtual < perguntas.length){
+    perguntaEl.innerText = perguntas[perguntaAtual].pergunta;
+    document.getElementById("btn0").innerText = perguntas[perguntaAtual].opcoes[0];
+    document.getElementById("btn1").innerText = perguntas[perguntaAtual].opcoes[1];
+    document.getElementById("btn2").innerText = perguntas[perguntaAtual].opcoes[2];
+  } else {
+    perguntaEl.innerText = "Quiz Finalizado!";
+    feedbackEl.innerText = "";
+    pontuacaoEl.innerText = "Sua pontuação: " + pontos + " / " + perguntas.length;
+  }
+}
+
+function responder(opcao){
+  if(opcao === perguntas[perguntaAtual].correta){
+    feedbackEl.innerText = "✅ Resposta correta!";
+    feedbackEl.style.color = "#22c55e";
+    pontos++;
+  } else {
+    feedbackEl.innerText = "❌ Resposta incorreta!";
+    feedbackEl.style.color = "#ef4444";
+  }
+
+  perguntaAtual++;
+  setTimeout(()=>{
+    feedbackEl.innerText = "";
+    carregarPergunta();
+  },1000);
+}
+
+carregarPergunta();
+</script>
+
+</body>
+</html>
